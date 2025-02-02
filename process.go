@@ -199,7 +199,7 @@ func readWriteTun(cnf *Config, wg *sync.WaitGroup, tun *os.File, in chan []byte,
 
 func Run(cnf *Config) error {
 	// create a TUN device
-	tun, err := CreateTunDevice(cnf.TunName)
+	tun, err := CreateTunDevice(cnf.TunName, cnf.ProxyIP)
 	if err != nil {
 		return fmt.Errorf("failed to create a TUN Device: %v\n", err)
 	}

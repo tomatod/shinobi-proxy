@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"syscall"
 	"unsafe"
+	"net"
 )
 
 const (
@@ -23,7 +24,7 @@ type ifreqTap struct {
 	Flags uint16
 }
 
-func CreateTunDevice(name string) (*os.File, error) {
+func CreateTunDevice(name string, vip net.IP) (*os.File, error) {
 	file, err := os.OpenFile("/dev/net/tun", os.O_RDWR, 0)
 	defer func() {
 		if file != nil && err != nil {
@@ -62,7 +63,7 @@ func CreateTunDevice(name string) (*os.File, error) {
 
 	// add route to TUN device
 	// TODO: rewrite this code without command
-	err = exec.Command("ip", "route", "add", "192.168.1.0/24", "dev", name).Run()
+	err = exec.Command("ip", "route", "add", vip.String(), "dev", name).Run()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to add route: %v", err)
 	}

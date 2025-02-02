@@ -79,7 +79,7 @@ func commandInit(fs *flag.FlagSet, conf *Config, args []string) error {
 		return nil
 	})
 
-	conf.ProxyIP = net.IPv4(192, 168, 1, 1)
+	conf.ProxyIP = net.IPv4(192, 168, 235, 219)
 	fs.Func("x", "IP address for the virtual IP for this proxy.", func(ipv4 string) error {
 		conf.ProxyIP = net.ParseIP(ipv4)
 		if conf.ProxyIP == nil || conf.ProxyIP.To4() == nil {
