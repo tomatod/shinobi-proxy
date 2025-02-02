@@ -1,14 +1,14 @@
 package main
 
 import (
+	"net"
 	"os"
 	"syscall"
-	"net"
 )
 
 const (
-	ETH_SIZE     = 14
-	MTU          = 9000
+	ETH_SIZE = 14
+	MTU      = 9000
 )
 
 func CreateRawSocket(nicName string) (*os.File, error) {
@@ -34,7 +34,6 @@ func CreateRawSocket(nicName string) (*os.File, error) {
 	if err = syscall.Bind(fd, &sockaddr); err != nil {
 		return nil, err
 	}
-	
+
 	return os.NewFile(uintptr(fd), nicName), nil
 }
-

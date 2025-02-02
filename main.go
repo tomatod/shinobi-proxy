@@ -2,21 +2,21 @@ package main
 
 import (
 	"errors"
-	"net"
 	"flag"
 	"fmt"
+	"net"
 	"os"
 )
 
 type Config struct {
-	NicName  string
-	TunName  string
-	InternalIP     net.IP
-	ExternalIP net.IP
-	RemoteIP net.IP
-	ProxyIP    net.IP
-	InternalPort   int
-	Protocol int
+	NicName      string
+	TunName      string
+	InternalIP   net.IP
+	ExternalIP   net.IP
+	RemoteIP     net.IP
+	ProxyIP      net.IP
+	InternalPort int
+	Protocol     int
 }
 
 func (c *Config) validate() error {
@@ -62,7 +62,7 @@ func commandInit(fs *flag.FlagSet, conf *Config, args []string) error {
 			return fmt.Errorf("failed to get IPv4 from '%s'", nicName, err)
 		}
 		if conf.InternalIP == nil {
-			conf.InternalIP = conf.ExternalIP  // set internal and external IP same value as default
+			conf.InternalIP = conf.ExternalIP // set internal and external IP same value as default
 		}
 		return nil
 	})
@@ -109,7 +109,7 @@ func commandInit(fs *flag.FlagSet, conf *Config, args []string) error {
 
 func main() {
 	conf := Config{}
-	fs   := flag.NewFlagSet("shinobi", flag.ContinueOnError)
+	fs := flag.NewFlagSet("shinobi", flag.ContinueOnError)
 
 	if err := commandInit(fs, &conf, os.Args[1:]); err != nil {
 		if err == flag.ErrHelp {
@@ -119,15 +119,6 @@ func main() {
 		fs.PrintDefaults()
 		os.Exit(1)
 	}
-
-	// debug
-	// if err := commandInit(fs, &conf, append(os.Args[1:], "-e", "eth0", "-r", "100.115.92.196", "-p", "80", "-t", "TCP")); err != nil {
-	// 	if err == flag.ErrHelp {
-	// 		os.Exit(0)
-	// 	}
-	// 	printf(3, "failed to parse command line with error: %v\n", err)
-	// 	os.Exit(1)
-	// }
 
 	if err := Run(&conf); err != nil {
 		printf(3, "failed to run process with error: %v\n", err)

@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"errors"
+	"fmt"
 	"net"
 )
 
@@ -92,7 +92,7 @@ func (h *IPv4Header) Bytes() ([]byte, error) {
 }
 
 func (h *IPv4Header) HeaderLen() int {
-	return int(h.VersionIHL & 0x0F) * 4
+	return int(h.VersionIHL&0x0F) * 4
 }
 
 func (h *IPv4Header) TotalLen() int {
@@ -149,13 +149,12 @@ func TCPHeaderParse(data []byte) (*TCPHeader, error) {
 	return header, nil
 }
 
-func(h *TCPHeader) Bytes() ([]byte, error) {
+func (h *TCPHeader) Bytes() ([]byte, error) {
 	buf := new(bytes.Buffer)
 	err := binary.Write(buf, binary.BigEndian, h)
 	return buf.Bytes(), err
 }
 
-func(h *TCPHeader) HeaderLen() int {
-	return int(h.DataOffsetFlags >> 12) * 4
+func (h *TCPHeader) HeaderLen() int {
+	return int(h.DataOffsetFlags>>12) * 4
 }
-

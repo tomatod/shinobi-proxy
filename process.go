@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
-	"net"
-	"sync"
 	"encoding/binary"
 	"fmt"
+	"net"
+	"os"
+	"sync"
 )
 
 const (
@@ -18,7 +18,7 @@ func readWriteNic(cnf *Config, wg *sync.WaitGroup, nic *os.File, in chan []byte,
 	var (
 		peerMacAddr []byte
 		nicMacAddr  []byte
-		wgSub sync.WaitGroup
+		wgSub       sync.WaitGroup
 	)
 
 	inf, err := net.InterfaceByName(cnf.NicName)
@@ -72,19 +72,19 @@ func readWriteNic(cnf *Config, wg *sync.WaitGroup, nic *os.File, in chan []byte,
 			}
 
 			// check protocol number
-			if ip.Header.ProtoNum() != 1 /* ICMP */ && ip.Header.ProtoNum() != cnf.Protocol  {
+			if ip.Header.ProtoNum() != 1 /* ICMP */ && ip.Header.ProtoNum() != cnf.Protocol {
 				continue
 			}
 
 			// check dst port (this computer's port)
 			if ip.Header.ProtoNum() == 6 /* UDP */ || ip.Header.ProtoNum() == 17 /* TCP */ {
-				dstPort := int(ip.Payload[2]) << 8 + int(ip.Payload[3])
+				dstPort := int(ip.Payload[2])<<8 + int(ip.Payload[3])
 				if dstPort != cnf.InternalPort {
 					continue
 				}
 			}
 
-			printf(0,"[nicr] receive a %s packet from %v to %v\n", protocolStr(ip.Header.ProtoNum()), ip.Header.SrcIP(), ip.Header.DstIP())
+			printf(0, "[nicr] receive a %s packet from %v to %v\n", protocolStr(ip.Header.ProtoNum()), ip.Header.SrcIP(), ip.Header.DstIP())
 
 			ipPacket, err := ip.Bytes()
 			if err != nil {
@@ -100,9 +100,9 @@ func readWriteNic(cnf *Config, wg *sync.WaitGroup, nic *os.File, in chan []byte,
 	go func() {
 		defer wgSub.Done()
 		for {
-			ipPacket := <- out
+			ipPacket := <-out
 			ethernetHeader := append(append(peerMacAddr, nicMacAddr...), []byte{0x08, 0x00}...) // IPv4 type is 0x0800
-			ethernetFrame := append(append(ethernetHeader, ipPacket...)) 
+			ethernetFrame := append(append(ethernetHeader, ipPacket...))
 			nic.Write(ethernetFrame)
 			printf(0, "[nicw] write a %s packet to nic\n", protocolStr(int(ipPacket[9])))
 		}
@@ -124,13 +124,13 @@ func readWriteTun(cnf *Config, wg *sync.WaitGroup, tun *os.File, in chan []byte,
 			buffer := make([]byte, MTU)
 			n, err := tun.Read(buffer)
 			if err != nil {
-				printf(2,"[tunr] Error reading from TUN: %v\n", err)
+				printf(2, "[tunr] Error reading from TUN: %v\n", err)
 				continue
 			}
 
 			ip, err := IPv4Parse(buffer[:n])
 			if err != nil {
-				printf(0,"[tunr] failed to parse IP header with error: %v\n", err)
+				printf(0, "[tunr] failed to parse IP header with error: %v\n", err)
 				continue
 			}
 
@@ -146,7 +146,7 @@ func readWriteTun(cnf *Config, wg *sync.WaitGroup, tun *os.File, in chan []byte,
 
 			// check src port
 			if ip.Header.ProtoNum() == 6 /* TCP */ || ip.Header.ProtoNum() == 17 /* UDP */ {
-				srcPort := int(ip.Payload[0]) << 8 + int(ip.Payload[1])
+				srcPort := int(ip.Payload[0])<<8 + int(ip.Payload[1])
 				if cnf.InternalPort != srcPort {
 					continue
 				}
@@ -179,7 +179,7 @@ func readWriteTun(cnf *Config, wg *sync.WaitGroup, tun *os.File, in chan []byte,
 		defer wgSub.Done()
 		for {
 			// wait IP packet from read ENI routine
-			ipPacket := <- in
+			ipPacket := <-in
 
 			// rewrite src IP address from remote IP to TUN's IP.
 			copy(ipPacket[12:16], cnf.ProxyIP.To4())
@@ -216,7 +216,7 @@ func Run(cnf *Config) error {
 
 	// start tunneling
 	var wg sync.WaitGroup
-	in  := make(chan []byte, CHANNEL_SIZE)
+	in := make(chan []byte, CHANNEL_SIZE)
 	out := make(chan []byte, CHANNEL_SIZE)
 	wg.Add(1)
 	go readWriteTun(cnf, &wg, tun, in, out)
