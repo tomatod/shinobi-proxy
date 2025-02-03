@@ -1,12 +1,14 @@
 # shinobi-proxy
-shinobi-proxy is proxy app for getting over firewall. It's just a funny tool :) I'm glad for you to play this app. Thank you!
+shinobi-proxy is proxy app for getting over firewall. You can ignore filters of inbound packets by firewall in the Linux host on which shinobi-proxy is runnning. It's just a funny tool :) I'm glad for you to play this app. Thank you!
 
 ## what is shinobi-proxy?
-shinobi-proxy read packets directly from network interfaces by rawsocket, and send them to inner processes on the Linux host which shinobi-proxy is on through TUN device, as if shinobi-proxy send packets to inner process directly. Rawsocket is not effected by filters of firewalls, so even if the Linux host drop packets by the firewall rules, shinobi-proxy can read the packets and send to the inner processes.
+shinobi-proxy read packets directly from network interfaces by rawsocket, and send them through TUN device to inner processes on the Linux host which shinobi-proxy is running on, as if shinobi-proxy send packets to inner process directly. Rawsocket is not affected by filters of firewalls, so even if the Linux host drop packets by the firewall rules, shinobi-proxy can read the packets and send to the inner processes.
 
 ![design](assets/design.drawio.png)
 
 ## let's play with docker
+You can play a scenario in which you can use SSH and access to a Linux docker container that enables firewall and drop any packets. Please process the bellow "container operation" and sometimes need to do "host machine operation".
+
 ### container operation
 ```shell
 # please open a new terminal on the host machine
